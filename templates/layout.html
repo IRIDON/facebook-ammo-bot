@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ data.siteName }} - {{ data.title }}</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ data.getUrlStatic('style.css') }}" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header class="head">
+        <div class="wrapper">
+            <a class="head_logo" href="./"></a>
+
+            <menu class="head_menu">
+                {% for key, value in data.pages.iteritems() %}
+                    {% if value["visible"] %}
+                        <li class="head_menu_item">
+                            <a class="head_menu_link" href="{{ data.getUrl(value["slug"]) }}">{{ value["name"] }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </menu>
+        </div>
+    </header>
+    <section class="content">
+        <div class="wrapper">
+        {% block body %}{% endblock %}
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="wrapper">
+            &copy {{ data.date.year }} {{ data.siteName }} All trademarks are the property of their respective owners.
+        </div>
+    </footer>
+</body>
+</html>
+
