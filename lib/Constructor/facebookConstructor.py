@@ -17,7 +17,6 @@ class FacebookConstructor(BotConstructor):
         "shopData",
         "visibleTopItems",
         "availableShops",
-        "currentShop",
         "categories",
         "categoriesKeys",
         "availableAmmo",
@@ -32,10 +31,9 @@ class FacebookConstructor(BotConstructor):
         self.shopData = kwargs["shopData"]
         self.visibleTopItems = kwargs["resultItemCount"]
         self.availableShops = self.shopData.keys()
-        self.currentShop = self.availableShops[0]
         self.discount = 0
         self.readDataFile(kwargs["dataFile"])
-        self.initShopData(self.currentShop)
+        self.initShopData(self.availableShops[0])
 
     """ Parse facebook data and return message """
     def getMessage(self, data):
@@ -62,70 +60,6 @@ class FacebookConstructor(BotConstructor):
                     return recipient_id, message_text
         except Exception as error:
             log.error("Facebook " + error)
-
-    def readDataFile(self, dataFile):
-        with open(dataFile, "r") as dataFile:
-            data = json.loads(dataFile.read())
-
-            self.message = data["message"]
-            self.commands = data["commands"]
-
-    """ find and structure offer results for choise shop and caliber """
-    def topPrices(self, num=3, category='', discount=0):
-        result = []
-        allData = self.getData()
-
-        if not allData:
-            return self.message["base_error"]
-
-        data = allData[category]
-        dataLen = len(data)
-
-        if dataLen < num:
-            num = dataLen
-
-        for index in range(0,num):
-            title = data[index]["title"]
-            price = data[index]["price"]
-
-            if discount == 0:
-                result.append("%s %s - %s" % (price, self.currency, title))
-            else:
-                result.append("%s %s \"%s\" - %s" % (
-                    self.getDiscount(price, discount),
-                    self.currency,
-                    price,
-                    title
-                ))
-        
-        result.append(allData["url"][category])
-        
-        return result
-
-    def chunks(self, l, n):
-        """Yield successive n-sized chunks from l."""
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
-    def separateText(self, text):
-        return "\n\n".join(text)
-
-    def separateMesageToTwo(self, textArray):
-        lenArr = len(textArray) / 2
-        first = self.separateText(textArray[:lenArr])
-        second = self.separateText(textArray[lenArr:])
-
-        return first, second
-
-    def getAllShopsNames(self, shopData):
-        result = []
-
-        for shopName in shopData:
-            shop = shopData[shopName]
-            
-            result.append(shop["shop_name"])
-
-        return ", ".join(result)
 
     def setDiscount(self, discount):
         try:

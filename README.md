@@ -2,7 +2,7 @@
 
 Simple bot for parse ammo prices
 
-*python facebook.py* - run facebook bot
+*python run.py* - run facebook bot
 
 *python parse.py* - run data parse script
 

@@ -9,7 +9,7 @@ default_settings = {
     "PORT": 1025,
     "ACCESS_TOKEN": apiKey["ACCESS_TOKEN"],
     "VERIFY_TOKEN": apiKey["VERIFY_TOKEN"],
-    "BOT_DATA_FILE": path + "/config/facebookCommands.json",
+    "BOT_DATA_FILE": path + "/config/messages.json",
     "RESULT_ITEMS_COUNT": 5,
     "DISCONT": [0, 3, 5, 10, 15, 20, 25],
     "CURRENCY": "UAH",
