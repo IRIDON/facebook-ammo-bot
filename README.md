@@ -10,11 +10,9 @@ Simple bot for parse ammo prices
 ## Install
 
 ```
-pip install pyTelegramBotAPI
 pip install requests
 pip install lxml
 pip install Flask
 pip install pymessenger
 pip install logging
-npm install botanio
 ```
