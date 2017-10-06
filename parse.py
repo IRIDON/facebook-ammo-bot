@@ -18,7 +18,7 @@ kulyaParse = KulyaParseData(
     settings.SHOPS["kulya"]
 )
 
-# parseIbis.parse()
+parseIbis.parse()
 parseStvol.parse()
-# parseSafari.parse()
-# kulyaParse.parse()
+parseSafari.parse()
+kulyaParse.parse()
