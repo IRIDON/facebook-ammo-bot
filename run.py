@@ -15,6 +15,7 @@ fb = FacebookConstructor(
     currency=settings.CURRENCY,
     discount=settings.DISCONT,
     shopData=settings.SHOPS,
+    allCalibers=settings.CALIBERS,
     resultItemCount=settings.RESULT_ITEMS_COUNT,
 )
 botSettings = BotSetSettings(
@@ -57,9 +58,13 @@ def webhook():
         if message.find("__") != -1:
             dataCategory = message.split("__")[0]
             dataId = message.split("__")[1]
+
         if dataCategory == "SHOP": # (2)
             if dataId == "DISCOUNT": # (2.2.1)
                 fb.printListDiscount(recipient_id)
+            elif dataId == "ALL":
+                fb.setDiscount("0%")
+                fb.botAllCaliberChoice(recipient_id)
             else: # (2.1)
                 fb.setDiscount("0%")
                 fb.botSelectStore(recipient_id)
@@ -70,6 +75,8 @@ def webhook():
             fb.botCaliberChoice(dataId, recipient_id)
         elif dataCategory == "TOP": # (4)
             fb.botPrintTop(dataId , recipient_id)
+        elif dataCategory == "ALL": # (2.2)
+            fb.botPrintAll(dataId, recipient_id)
         elif dataCategory == "COMMANDS": # (4)
             fb.botCommands(recipient_id)
         else: # (1)

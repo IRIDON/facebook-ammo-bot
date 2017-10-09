@@ -21,7 +21,9 @@ class FacebookConstructor(BotConstructor):
         "categoriesKeys",
         "availableAmmo",
         "dataFileUrl",
-        "discount"
+        "discount",
+        "currentShop",
+        "allCalibers"
     ]
     def __init__(self, **kwargs):
         self.accessToken = kwargs["token"]
@@ -32,32 +34,37 @@ class FacebookConstructor(BotConstructor):
         self.visibleTopItems = kwargs["resultItemCount"]
         self.availableShops = self.shopData.keys()
         self.discount = 0
+        self.allCalibers = kwargs["allCalibers"]
         self.readDataFile(kwargs["dataFile"])
-        self.initShopData(self.availableShops[0])
+        self.currentShop = self.availableShops[0]
+        self.initShopData(self.currentShop)
 
     """ Parse facebook data and return message """
     def getMessage(self, data):
         try:
             for event in data['entry']:
-                for item in event['messaging']:
-                    recipient_id = item['sender']['id']
+                if 'messaging' in event:
+                    for item in event['messaging']:
+                        recipient_id = item['sender']['id']
 
-                    if item.get('message'):
-                        message = item['message']
+                        if item.get('message'):
+                            message = item['message']
 
-                        if message.get('quick_reply'):
-                            message_text = message['quick_reply']['payload']
-                        elif message.get('text') and not message.get('app_id'):
-                            message_text = message['text']
+                            if message.get('quick_reply'):
+                                message_text = message['quick_reply']['payload']
+                            elif message.get('text') and not message.get('app_id'):
+                                message_text = message['text']
+                            else:
+                                return False, False
+
+                        elif item.get('postback'):
+                            message_text = item['postback']['payload']
                         else:
                             return False, False
 
-                    elif item.get('postback'):
-                        message_text = item['postback']['payload']
-                    else:
-                        return False, False
-
-                    return recipient_id, message_text
+                        return recipient_id, message_text
+                else:
+                    return False, False
         except Exception as error:
             log.error("Facebook " + error)
 
@@ -130,12 +137,13 @@ class FacebookConstructor(BotConstructor):
     """ Create structure for list main commans """
     def getFormateCommands(self, data):
         result = []
-  
-        for key in data:
+        sortData = sorted(data.items(), key=lambda x: x[1][2])
+
+        for data in sortData:
             dic = {}
             dic["type"] = "postback"
-            dic["title"] = data[key][1]
-            dic["payload"] = "%s__%s" % (data[key][0], key.upper())
+            dic["title"] = data[1][1]
+            dic["payload"] = "%s__%s" % (data[1][0], data[0].upper())
 
             result.append(dic)
 
@@ -221,6 +229,52 @@ class FacebookConstructor(BotConstructor):
         except Exception as error:
             log.error("Facebook " + error)
 
+    def botAllCaliberChoice(self, recipient_id):
+        keyboard = self.botCreateButtons(
+            self.message["select_caliber"],
+            self.allCalibers,
+            "all"
+        )
+        self.bot.send_generic_message(
+            recipient_id,
+            keyboard
+        )
+
+    def botPrintAll(self, caliber, recipient_id):
+        data = self.shopData
+        result = []
+        dataFiles = []
+
+        for shopName in self.shopData:
+            shop = data[shopName]
+
+            with open(shop["data_file"], "r") as file:
+                f = json.load(file)
+
+                if caliber in f:
+                    for item in f[caliber]:
+                        item['shop_name'] = shop['shop_name'].upper()
+
+                        dataFiles.append(item)
+
+        data = sorted(dataFiles, key=lambda x: x["price"])
+
+        for index in data:
+            result.append("%s %s - %s (%s)" % (
+                index["price"],
+                self.currency,
+                index["title"],
+                index["shop_name"]
+            ))
+
+        textParts = self.separateMesageToTwo(result[:10])
+
+        for text in textParts:
+            self.bot.send_text_message(
+                recipient_id,
+                text
+            )
+
     """ Print offers """
     def botPrintTop(self, currentCaliber, recipient_id):
         try:
@@ -234,13 +288,13 @@ class FacebookConstructor(BotConstructor):
             textFormated = self.separateText(textArray)
 
             if len(textFormated) >= 640: # test message for chars limit - for facebook it's 640 chars
-                textPartFirst, textPartSecond = self.separateMesageToTwo(textArray)
+                textParts = self.separateMesageToTwo(textArray)
 
                 self.bot.send_text_message(
                     recipient_id,
-                    textPartFirst
+                    textParts[0]
                 )
-                textFormated = textPartSecond
+                textFormated = textParts[1]
             elif len(textArray) == 0:
                 self.bot.send_button_message(
                     recipient_id,

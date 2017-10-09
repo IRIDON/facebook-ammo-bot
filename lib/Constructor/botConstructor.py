@@ -17,9 +17,9 @@ class BotConstructor(object):
         
         if self.shopData[shopName]:
             shopData = self.shopData[shopName]
+            categories = sorted(shopData["category"].items(), key=lambda x: x[1][2])
 
-            self.categories = shopData["category"]
-            self.categoriesKeys = self.categories.keys()
+            self.categoriesKeys = map(lambda x: x[0], categories)
             self.availableAmmo = shopData["ammo_type"]
             self.dataFileUrl = shopData["data_file"]
             self.currentShop = shopName
@@ -92,11 +92,13 @@ class BotConstructor(object):
         return "\n\n".join(text)
 
     def separateMesageToTwo(self, textArray):
+        result = []
         lenArr = len(textArray) / 2
-        first = self.separateText(textArray[:lenArr])
-        second = self.separateText(textArray[lenArr:])
 
-        return first, second
+        result.append(self.separateText(textArray[:lenArr]))
+        result.append(self.separateText(textArray[lenArr:]))
+
+        return result
 
     def getAllShopsNames(self, shopData):
         result = []
