@@ -21,7 +21,8 @@ fb = FacebookConstructor(
 botSettings = BotSetSettings(
     token=settings.ACCESS_TOKEN,
     dataFile=settings.BOT_DATA_FILE,
-    shopData=settings.SHOPS
+    shopData=settings.SHOPS,
+    availableLanguages=settings.AVAILABLE_LANGUAGES,
 )
 
 botSettings.getStart()
@@ -53,34 +54,40 @@ def webhook():
 
     if recipient_id and message:
         dataCategory = ''
+        local = settings.DEFAULT_LOCAL
 
         """ Test if it post data """
         if message.find("__") != -1:
-            dataCategory = message.split("__")[0]
-            dataId = message.split("__")[1]
+            messageArray = message.split("__")
+            dataCategory = messageArray[0]
+            dataId = messageArray[1]
+            local = settings.DEFAULT_LOCAL
+
+            if len(messageArray) > 2:
+                local = messageArray[2]
 
         if dataCategory == "SHOP": # (2)
             if dataId == "DISCOUNT": # (2.2.1)
-                fb.printListDiscount(recipient_id)
+                fb.printListDiscount(recipient_id, local)
             elif dataId == "ALL":
                 fb.setDiscount("0%")
-                fb.botAllCaliberChoice(recipient_id)
+                fb.botAllCaliberChoice(recipient_id, local)
             else: # (2.1)
                 fb.setDiscount("0%")
-                fb.botSelectStore(recipient_id)
+                fb.botSelectStore(recipient_id, local)
         elif dataCategory == "DISCOUNT": # (2.2)
             fb.setDiscount(dataId)
-            fb.botSelectStore(recipient_id)
+            fb.botSelectStore(recipient_id, local)
         elif dataCategory == "CHOICE": # (3)
-            fb.botCaliberChoice(dataId, recipient_id)
+            fb.botCaliberChoice(dataId, recipient_id, local)
         elif dataCategory == "TOP": # (4)
-            fb.botPrintTop(dataId , recipient_id)
+            fb.botPrintTop(dataId , recipient_id, local)
         elif dataCategory == "ALL": # (2.2)
             fb.botPrintAll(dataId, recipient_id)
         elif dataCategory == "COMMANDS": # (4)
-            fb.botCommands(recipient_id)
+            fb.botCommands(recipient_id, local)
         else: # (1)
-            fb.botCommands(recipient_id)
+            fb.botCommands(recipient_id, local)
     
     return "ok", 200
 

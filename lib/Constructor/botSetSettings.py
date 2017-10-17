@@ -10,13 +10,15 @@ class BotSetSettings(FacebookConstructor):
         "accessToken",
         "shopData",
         "message",
-        "commands"
+        "commands",
+        "availableLanguages"
     }
-    def __init__(self, token, dataFile, shopData):
+    def __init__(self, **kwargs):
         self.url = "https://graph.facebook.com/v%s/me/messenger_profile?access_token=%s"
-        self.accessToken = token
-        self.shopData = shopData
-        self.readDataFile(dataFile)
+        self.accessToken = kwargs["token"]
+        self.shopData = kwargs["shopData"]
+        self.availableLanguages = kwargs["availableLanguages"]
+        self.readDataFile(kwargs["dataFile"])
         
     def getStart(self):
         textResult = []
@@ -40,17 +42,29 @@ class BotSetSettings(FacebookConstructor):
         return self.botSendProfile(payload)
 
     def setMenu(self):
+        menuItems = []
+
+        for language in self.availableLanguages:
+            data = self.commands[language]
+
+            if data:
+                menuItems.append(self.getMenuItem(data, language))
+
         payload = {
-            "persistent_menu": [
-                {
-                    "locale": "default",
-                    "composer_input_disabled": True,
-                    "call_to_actions": self.getFormateCommands(self.commands)
-                }
-            ]
+            "persistent_menu": menuItems
         }
 
         return self.botSendProfile(payload)
+
+    def getMenuItem(self, data, local):
+        dict = {}
+
+        dict["locale"] = local
+        dict["composer_input_disabled"] = True
+        dict["call_to_actions"] = self.getFormateCommands(data, local)
+
+        return dict
+
 
     def botSendProfile(self, payload):
         request_endpoint = self.url % (DEFAULT_API_VERSION, self.accessToken)

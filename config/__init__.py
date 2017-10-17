@@ -13,6 +13,8 @@ default_settings = {
     "RESULT_ITEMS_COUNT": 5,
     "DISCONT": [0, 3, 5, 10, 15, 20, 25],
     "CURRENCY": "UAH",
+    "DEFAULT_LOCAL": "ru",
+    "AVAILABLE_LANGUAGES": ["en", "ru", "ua"],
     "CALIBERS": [
         "223_Rem",
         "308_Win",

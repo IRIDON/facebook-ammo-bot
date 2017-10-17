@@ -109,3 +109,9 @@ class BotConstructor(object):
             result.append(shop["shop_name"])
 
         return ", ".join(result)
+
+    def getString(self, name, local):
+        message = self.message[name]
+
+        if message:
+            return message[local.lower()]
