@@ -1,10 +1,10 @@
 {
   "name": "AmmoBot",
   "description": "",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IRIDON/ammo-bot.git"
+    "url": "https://github.com/IRIDON/facebook-ammo-bot"
   },
   "author": "IRIDON",
   "license": "ISC",
