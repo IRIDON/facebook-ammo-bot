@@ -64,7 +64,7 @@ class BotSetSettings(FacebookConstructor):
 
         dict["locale"] = localeName
         dict["composer_input_disabled"] = True
-        dict["call_to_actions"] = self.getFormateCommands(data, localeName)
+        dict["call_to_actions"] = self.getFormateCommands(data, local)
 
         return dict
 
