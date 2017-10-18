@@ -11,13 +11,15 @@ class BotSetSettings(FacebookConstructor):
         "shopData",
         "message",
         "commands",
-        "availableLanguages"
+        "availableLanguages",
+        "defaultLocal"
     }
     def __init__(self, **kwargs):
         self.url = "https://graph.facebook.com/v%s/me/messenger_profile?access_token=%s"
         self.accessToken = kwargs["token"]
         self.shopData = kwargs["shopData"]
         self.availableLanguages = kwargs["availableLanguages"]
+        self.defaultLocal = kwargs["defaultLocal"]
         self.readDataFile(kwargs["dataFile"])
         
     def getStart(self):
@@ -25,9 +27,9 @@ class BotSetSettings(FacebookConstructor):
         textData = self.message["greeting_text"]
         command = "COMMANDS__COMMANDS"
 
-        for key, value in textData.iteritems():
+        for local, value in textData.iteritems():
             textResult.append({
-                "locale": key,
+                "locale": 'default' if local == self.defaultLocal else local,
                 "text": value  % (self.getAllShopsNames(self.shopData))
             })
 
@@ -57,11 +59,12 @@ class BotSetSettings(FacebookConstructor):
         return self.botSendProfile(payload)
 
     def getMenuItem(self, data, local):
+        localeName = 'default' if local == self.defaultLocal else local
         dict = {}
 
-        dict["locale"] = local
+        dict["locale"] = localeName
         dict["composer_input_disabled"] = True
-        dict["call_to_actions"] = self.getFormateCommands(data, local)
+        dict["call_to_actions"] = self.getFormateCommands(data, localeName)
 
         return dict
 

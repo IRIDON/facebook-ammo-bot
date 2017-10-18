@@ -24,6 +24,7 @@ botSettings = BotSetSettings(
     dataFile=settings.BOT_DATA_FILE,
     shopData=settings.SHOPS,
     availableLanguages=settings.AVAILABLE_LANGUAGES,
+    defaultLocal=settings.DEFAULT_LOCAL
 )
 
 botSettings.getStart()
