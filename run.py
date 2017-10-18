@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+import json, os
 from config import settings
 from flask import Flask, request, send_from_directory
 from lib.Constructor.facebookConstructor import FacebookConstructor
@@ -17,6 +17,7 @@ fb = FacebookConstructor(
     shopData=settings.SHOPS,
     allCalibers=settings.CALIBERS,
     resultItemCount=settings.RESULT_ITEMS_COUNT,
+    local=settings.DEFAULT_LOCAL
 )
 botSettings = BotSetSettings(
     token=settings.ACCESS_TOKEN,
@@ -54,40 +55,38 @@ def webhook():
 
     if recipient_id and message:
         dataCategory = ''
-        local = settings.DEFAULT_LOCAL
 
         """ Test if it post data """
         if message.find("__") != -1:
             messageArray = message.split("__")
             dataCategory = messageArray[0]
             dataId = messageArray[1]
-            local = settings.DEFAULT_LOCAL
 
             if len(messageArray) > 2:
-                local = messageArray[2]
+                fb.setLocal(messageArray[2])
 
         if dataCategory == "SHOP": # (2)
             if dataId == "DISCOUNT": # (2.2.1)
-                fb.printListDiscount(recipient_id, local)
+                fb.printListDiscount(recipient_id)
             elif dataId == "ALL":
                 fb.setDiscount("0%")
-                fb.botAllCaliberChoice(recipient_id, local)
+                fb.botAllCaliberChoice(recipient_id)
             else: # (2.1)
                 fb.setDiscount("0%")
-                fb.botSelectStore(recipient_id, local)
+                fb.botSelectStore(recipient_id)
         elif dataCategory == "DISCOUNT": # (2.2)
             fb.setDiscount(dataId)
-            fb.botSelectStore(recipient_id, local)
+            fb.botSelectStore(recipient_id)
         elif dataCategory == "CHOICE": # (3)
-            fb.botCaliberChoice(dataId, recipient_id, local)
+            fb.botCaliberChoice(dataId, recipient_id)
         elif dataCategory == "TOP": # (4)
-            fb.botPrintTop(dataId , recipient_id, local)
+            fb.botPrintTop(dataId , recipient_id)
         elif dataCategory == "ALL": # (2.2)
             fb.botPrintAll(dataId, recipient_id)
         elif dataCategory == "COMMANDS": # (4)
-            fb.botCommands(recipient_id, local)
+            fb.botCommands(recipient_id)
         else: # (1)
-            fb.botCommands(recipient_id, local)
+            fb.botCommands(recipient_id)
     
     return "ok", 200
 

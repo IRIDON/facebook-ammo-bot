@@ -110,11 +110,11 @@ class BotConstructor(object):
 
         return ", ".join(result)
 
-    def getString(self, name, local):
+    def getString(self, name):
         message = self.message[name]
 
         if message:
-            messageLocale = message[local.lower()]
+            messageLocale = message[self.local.lower()]
             
             if messageLocale:
                 return messageLocale

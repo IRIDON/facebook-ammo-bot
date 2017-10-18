@@ -23,7 +23,8 @@ class FacebookConstructor(BotConstructor):
         "dataFileUrl",
         "discount",
         "currentShop",
-        "allCalibers"
+        "allCalibers",
+        "local"
     ]
     def __init__(self, **kwargs):
         self.accessToken = kwargs["token"]
@@ -38,6 +39,7 @@ class FacebookConstructor(BotConstructor):
         self.readDataFile(kwargs["dataFile"])
         self.currentShop = self.availableShops[0]
         self.initShopData(self.currentShop)
+        self.local = kwargs["local"]
 
     """ Parse facebook data and return message """
     def getMessage(self, data):
@@ -76,25 +78,31 @@ class FacebookConstructor(BotConstructor):
             self.discount = discount
         except Exception as error:
             log.error(error)
+
+    def setLocal(self, local):
+        try:
+            self.local = local
+        except Exception as error:
+            log.error(error)
         
     """ Create slide button group """
-    def createButtonGroup(self, arr, dataId, local):
+    def createButtonGroup(self, arr, dataId):
         result = []
 
         for name in arr:
             dic = {}
             dic["type"] = "postback"
             dic["title"] = self.getKeyName(name)
-            dic["payload"] = "%s__%s__%s" % (dataId.upper(), name, local.upper())
+            dic["payload"] = "%s__%s__%s" % (dataId.upper(), name, self.local.upper())
 
             result.append(dic)
         
         return list(self.chunks(result, 3))
 
     """ Create button pack for button group """
-    def botCreateButtons(self, title, arr, dataId, local):
+    def botCreateButtons(self, title, arr, dataId):
         result = []
-        buttons = self.createButtonGroup(arr, dataId, local)
+        buttons = self.createButtonGroup(arr, dataId)
 
         for item in buttons:
             dic = {}
@@ -105,14 +113,14 @@ class FacebookConstructor(BotConstructor):
 
         return result
 
-    def botCreadeQuickReplies(self, text, arr, dataId, local):
+    def botCreadeQuickReplies(self, text, arr, dataId):
         result = []
 
         for name in arr:
             dic = {}
             dic["content_type"] = "text"
             dic["title"] = self.getKeyName(name)
-            dic["payload"] = "%s__%s__%s" % (dataId.upper(), name, local.upper())
+            dic["payload"] = "%s__%s__%s" % (dataId.upper(), name, self.local.upper())
 
             result.append(dic)
 
@@ -149,27 +157,27 @@ class FacebookConstructor(BotConstructor):
 
         return result
 
-    def botCommands(self, recipient_id, local):
+    def botCommands(self, recipient_id):
         try:
             self.bot.send_button_message(
                 recipient_id,
-                self.getString("select_commad", local),
-                self.getFormateCommands(self.commands[local], local)
+                self.getString("select_commad"),
+                self.getFormateCommands(self.commands[self.local], self.local)
             )
         except Exception as error:
             log.error(error)
 
-    def botNone(self, recipient_id, local):
+    def botNone(self, recipient_id):
         try:
             self.bot.send_text_message(
                 recipient_id,
-                self.getString("no_commad", local),
+                self.getString("no_commad"),
             )
         except Exception as error:
             log.error(error)
 
     """ Print aviable discounts """
-    def printListDiscount(self, recipient_id, local):
+    def printListDiscount(self, recipient_id):
         try:
             doscounts = []
 
@@ -179,10 +187,9 @@ class FacebookConstructor(BotConstructor):
                 )
                 
             keyboard = self.botCreadeQuickReplies(
-                self.getString("select_discount", local),
+                self.getString("select_discount"),
                 doscounts,
-                "discount",
-                local
+                "discount"
             )
 
             self.bot.send_message(
@@ -193,7 +200,7 @@ class FacebookConstructor(BotConstructor):
             log.error(error)
 
     """ Print aviable shops list """
-    def botSelectStore(self, recipient_id, local):
+    def botSelectStore(self, recipient_id):
         try:
             shopName = []
 
@@ -201,10 +208,9 @@ class FacebookConstructor(BotConstructor):
                 shopName.append(shop.upper())
                 
             keyboard = self.botCreadeQuickReplies(
-                self.getString("select_store", local),
+                self.getString("select_store"),
                 shopName,
-                "choice",
-                local
+                "choice"
             )
 
             self.bot.send_message(
@@ -215,15 +221,14 @@ class FacebookConstructor(BotConstructor):
             log.error(error)
 
     """ Print aviable caliber list for current shop """
-    def botCaliberChoice(self, currentShop, recipient_id, local):
+    def botCaliberChoice(self, currentShop, recipient_id):
         try:
             self.initShopData(currentShop);
 
             keyboard = self.botCreateButtons(
-                self.getString("select_caliber", local),
+                self.getString("select_caliber"),
                 self.categoriesKeys,
-                "top",
-                local
+                "top"
             )
             self.bot.send_generic_message(
                 recipient_id,
@@ -232,12 +237,11 @@ class FacebookConstructor(BotConstructor):
         except Exception as error:
             log.error(error)
 
-    def botAllCaliberChoice(self, recipient_id, local):
+    def botAllCaliberChoice(self, recipient_id):
         keyboard = self.botCreateButtons(
-            self.getString("select_caliber", local),
+            self.getString("select_caliber"),
             self.allCalibers,
-            "all",
-            local
+            "all"
         )
         self.bot.send_generic_message(
             recipient_id,
@@ -280,7 +284,7 @@ class FacebookConstructor(BotConstructor):
             )
 
     """ Print offers """
-    def botPrintTop(self, currentCaliber, recipient_id, local):
+    def botPrintTop(self, currentCaliber, recipient_id):
         try:
             text = self.topPrices(
                 self.visibleTopItems,
@@ -302,9 +306,9 @@ class FacebookConstructor(BotConstructor):
             elif len(textArray) == 0:
                 self.bot.send_button_message(
                     recipient_id,
-                    self.getString("no_results", local),
+                    self.getString("no_results"),
                     self.createButtonLink(
-                        self.getString("link_text", local),
+                        self.getString("link_text"),
                         link
                     )
                 )
@@ -313,7 +317,7 @@ class FacebookConstructor(BotConstructor):
                 recipient_id,
                 textFormated,
                 self.createButtonLink(
-                    self.getString("link_text", local),
+                    self.getString("link_text"),
                     link
                 )
             )
