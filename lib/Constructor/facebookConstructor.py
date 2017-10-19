@@ -159,10 +159,13 @@ class FacebookConstructor(BotConstructor):
 
     def botCommands(self, recipient_id):
         try:
+            # buttons = self.getFormateCommands(self.commands[self.local], self.local)
+            buttons = self.getFormateCommands(self.commands['ru'], 'ru')
+
             self.bot.send_button_message(
                 recipient_id,
                 self.getString("select_commad"),
-                self.getFormateCommands(self.commands[self.local], self.local)
+                buttons
             )
         except Exception as error:
             log.error(error)

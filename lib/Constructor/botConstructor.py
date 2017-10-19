@@ -114,7 +114,8 @@ class BotConstructor(object):
         message = self.message[name]
 
         if message:
-            messageLocale = message[self.local.lower()]
+            # messageLocale = message[self.local.lower()]
+            messageLocale = message['ru']
             
             if messageLocale:
                 return messageLocale

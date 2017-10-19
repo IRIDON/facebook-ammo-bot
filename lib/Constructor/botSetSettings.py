@@ -29,8 +29,8 @@ class BotSetSettings(FacebookConstructor):
 
         for local, value in textData.iteritems():
             textResult.append({
-                "locale": 'default' if local == self.defaultLocal else local,
-                "text": value  % (self.getAllShopsNames(self.shopData))
+                "locale": local,
+                "text": value % (self.getAllShopsNames(self.shopData))
             })
 
         payload = {
@@ -46,11 +46,13 @@ class BotSetSettings(FacebookConstructor):
     def setMenu(self):
         menuItems = []
 
-        for language in self.availableLanguages:
-            data = self.commands[language]
+        # for language in self.availableLanguages:
+        #     data = self.commands[language]
 
-            if data:
-                menuItems.append(self.getMenuItem(data, language))
+        #     if data:
+        #         menuItems.append(self.getMenuItem(data, language))
+
+        menuItems.append(self.getMenuItem(self.commands['ru'], 'ru'))
 
         payload = {
             "persistent_menu": menuItems
