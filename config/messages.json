@@ -1,7 +1,7 @@
 {
     "message": {
         "greeting_text": {
-            "default": "Привет {{user_first_name}}! Я могу помочь тебе быстро узнать цены на патроны в таких магазинах: %s",
+            "ru": "Привет {{user_first_name}}! Я могу помочь тебе быстро узнать цены на патроны в таких магазинах: %s",
             "ua": "Привіт {{user_first_name}}! Я можу допомогти тобі швидко довідатися про ціни на патрони в таких магазинах як: %s",
             "en": "Hello {{user_first_name}}! I can help you quickly find out the prices for ammo in such stores: %s"
         },

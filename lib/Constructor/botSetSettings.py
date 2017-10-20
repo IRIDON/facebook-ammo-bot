@@ -29,7 +29,7 @@ class BotSetSettings(FacebookConstructor):
 
         for local, value in textData.iteritems():
             textResult.append({
-                "locale": local,
+                "locale": self.getFbLocaleName(local),
                 "text": value % (self.getAllShopsNames(self.shopData))
             })
 
@@ -51,8 +51,7 @@ class BotSetSettings(FacebookConstructor):
 
         #     if data:
         #         menuItems.append(self.getMenuItem(data, language))
-
-        menuItems.append(self.getMenuItem(self.commands['ru'], 'ru'))
+        menuItems.append(self.getMenuItem(self.commands[self.defaultLocal], self.defaultLocal))
 
         payload = {
             "persistent_menu": menuItems
@@ -61,15 +60,13 @@ class BotSetSettings(FacebookConstructor):
         return self.botSendProfile(payload)
 
     def getMenuItem(self, data, local):
-        localeName = 'default' if local == self.defaultLocal else local
         dict = {}
 
-        dict["locale"] = localeName
+        dict["locale"] = self.getFbLocaleName(local)
         dict["composer_input_disabled"] = True
         dict["call_to_actions"] = self.getFormateCommands(data, local)
 
         return dict
-
 
     def botSendProfile(self, payload):
         request_endpoint = self.url % (DEFAULT_API_VERSION, self.accessToken)
@@ -79,3 +76,15 @@ class BotSetSettings(FacebookConstructor):
         )
 
         return response.json()
+
+    def getFbLocaleName(self, local):
+        fbLocaleName = {
+            "en": "en_US",
+            "ru": "ru_RU",
+            "ua": "uk_UA"
+        }
+
+        if fbLocaleName[local]:
+            return 'default' if local == self.defaultLocal else fbLocaleName[local]
+        else:
+            return None
