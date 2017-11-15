@@ -51,22 +51,17 @@ class ParseData(object):
         return currentTime
 
     def parse(self):
-        try:
-            result = {
-                "url": {}
-            }
+        result = {
+            "url": {}
+        }
 
-            for ammo in self.availableAmmo:
-                url = self.getUrl(ammo)
-                data = self.getStructure(url)
+        for ammo in self.availableAmmo:
+            url = self.getUrl(ammo)
+            data = self.getStructure(url)
 
-                result[ammo] = data
-                result["url"][ammo] = url
+            result[ammo] = data
+            result["url"][ammo] = url
 
-            result["time"] = self.getCurrentTime()
+        result["time"] = self.getCurrentTime()
 
-            self.saveData(self.dataFile, json.dumps(result))
-        except Exception as error:
-            log.error(error)
-        finally:
-            log.info(u"Parse %s successful" % (self.shopName))
+        self.saveData(self.dataFile, json.dumps(result))
