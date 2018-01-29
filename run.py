@@ -36,7 +36,6 @@ print 'run'
 def index():
     print 'index'
     if request.method == 'GET':
-        print 'Get is ok'
 
         if request.args.get("hub.verify_token") == settings.VERIFY_TOKEN:
             print 'verify token is ok'
@@ -57,8 +56,6 @@ def webhook():
     """
     data = request.get_json()
     recipient_id, message = fb.getMessage(data)
-    print 'Post'
-    print 'Id ' + data
 
     if recipient_id and message:
         dataCategory = ''
