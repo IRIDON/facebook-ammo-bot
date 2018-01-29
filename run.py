@@ -58,8 +58,8 @@ def webhook():
     data = request.get_json()
     recipient_id, message = fb.getMessage(data)
     print 'Post'
-    print 'Id ' + recipient_id
-    print 'Id ' + message
+    print 'Id ' + data
+
     if recipient_id and message:
         dataCategory = ''
 
