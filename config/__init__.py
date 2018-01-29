@@ -6,7 +6,7 @@ from key import default_api_key as apiKey
 path = os.path.abspath(os.path.split(sys.argv[0])[0])
 
 default_settings = {
-    "PORT": 1026,
+    "PORT": 1025,
     "ACCESS_TOKEN": apiKey["ACCESS_TOKEN"],
     "VERIFY_TOKEN": apiKey["VERIFY_TOKEN"],
     "BOT_DATA_FILE": path + "/config/messages.json",
