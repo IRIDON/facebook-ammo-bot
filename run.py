@@ -36,7 +36,8 @@ print 'run'
 def index():
     print 'index'
     if request.method == 'GET':
-
+        print 'key ' + request.args.get("hub.verify_token")
+        print 'key settings ' + settings.VERIFY_TOKEN:
         if request.args.get("hub.verify_token") == settings.VERIFY_TOKEN:
             print 'verify token is ok'
             return request.args.get("hub.challenge")
