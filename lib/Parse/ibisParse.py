@@ -22,7 +22,7 @@ class IbisParseData(ParseData):
         price = tree.xpath('.//div[contains(@class, "pb_price")]')
         priceText = price[0].xpath('./text()')
 
-        if priceText:
+        if len(priceText[0].strip()):
             return float(priceText[0])
         else:
             pn = price[0].xpath('*/text()')
